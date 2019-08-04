@@ -1,0 +1,36 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name":"client",
+      "image": "ajirau/multi-client",
+      "hostname": "client",
+      "essential": false
+    },
+    {
+      "name":"server",
+      "image": "ajirau/multi-server",
+      "hostname": "api",
+      "essential": false
+    },
+    {
+      "name":"worker",
+      "image": "ajirau/multi-worker",
+      "hostname": "worker",
+      "essential": false
+    },
+    {
+      "name":"nginx",
+      "image": "ajirau/multi-nginx",
+      "hostname": "nginx",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": ["client", "server"]
+    }
+  ]
+}
