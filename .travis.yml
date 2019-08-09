@@ -1,38 +1,35 @@
-language: generic
 sudo: required
 services:
   - docker
 
 before_install:
-  - docker build -t ajirau/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t stephengrider/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true ajirau/react-test npm test
+  - docker run stephengrider/react-test npm test -- --coverage
 
 after_success:
-  - docker build -t ajirau/multi-client ./client
-  - docker build -t ajirau/multi-nginx ./nginx
-  - docker build -t ajirau/multi-server ./server
-  - docker build -t ajirau/multi-worker ./worker
+  - docker build -t stephengrider/multi-client ./client
+  - docker build -t stephengrider/multi-nginx ./nginx
+  - docker build -t stephengrider/multi-server ./server
+  - docker build -t stephengrider/multi-worker ./worker
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  # Take those images and push to docker hub
-  - docker push ajirau/multi-client
-  - docker push ajirau/multi-nginx
-  - docker push ajirau/multi-server
-  - docker push ajirau/multi-worker
+  # Take those images and push them to docker hub
+  - docker push stephengrider/multi-client
+  - docker push stephengrider/multi-nginx
+  - docker push stephengrider/multi-server
+  - docker push stephengrider/multi-worker
 
 deploy:
   provider: elasticbeanstalk
-  region: us-east-2
+  region: us-west-1
   app: multi-docker
   env: MultiDocker-env
-  bucket_name: elasticbeanstalk-us-east-2-728108493268
+  bucket_name: elasticbeanstalk-us-west-1-306476627547
   bucket_path: docker-multi
   on:
     branch: master
-  access_key_id:
-    secure: $AWS_ACCESS_KEY
+  access_key_id: $AWS_ACCESS_KEY
   secret_access_key:
     secure: $AWS_SECRET_KEY
-    
